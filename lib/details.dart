@@ -112,28 +112,30 @@ Results results;
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        title: Row(
-          children: <Widget>[
-            Icon(Icons.home,color: Colors.white,size: 35,),
-            SizedBox(width: 10,),
-            Label(color: Colors.white,text: 'Accounts',size: 25,)
-          ],
+        title: Container(
+          width: double.infinity,
+          height: 30,
+          color: Theme.of(context).primaryColor,
+          child: Align(
+              alignment: Alignment.topRight,
+              child: Label(text: 'Welcome ${widget.uname}',color: Colors.white,)),
         ),
       ),
 
       body: Column(
         children: <Widget>[
           Container(
-            width: double.infinity,
-            height: 30,
             color: Theme.of(context).primaryColor,
-            child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Label(text: 'Welcome ${widget.uname}',color: Colors.white,),
-                )),
-
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(15,0,0,15),
+              child: Row(
+                children: <Widget>[
+                  Container(width:35,height:35,child: Image.asset('images/home.png')),
+                  SizedBox(width: 10,),
+                  Label(color: Colors.white,text: 'Accounts',size: 25,)
+                ],
+              ),
+            ),
           ),
 
           Container(

@@ -473,30 +473,33 @@ _displayDialog(BuildContext context) async {
     return StatefulBuilder(builder: (BuildContext context, StateSetter setState){
 
       return Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           elevation: 0,
-          title: Row(
+          title: Container(
+            width: double.infinity,
+            height: 30,
+            color: Theme.of(context).primaryColor,
+            child: Align(
+                alignment: Alignment.topRight,
+                child: Label(text: 'Welcome ${widget.uname}',color: Colors.white,)),
+          ),
+        ),
+        body: Column(
+          children: <Widget>[
+        Container(
+        color: Theme.of(context).primaryColor,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(15,0,0,15),
+          child: Row(
             children: <Widget>[
-              Icon(Icons.home,color: Colors.white,size: 35,),
+              Container(width:35,height:35,child: Image.asset('images/home.png')),
               SizedBox(width: 10,),
               Label(color: Colors.white,text: 'Accounts',size: 25,)
             ],
           ),
         ),
-        body: Column(
-          children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 30,
-              color: Theme.of(context).primaryColor,
-              child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Label(text: 'Welcome ${widget.uname}',color: Colors.white,),
-                  )),
-
-            ),
+      ),
 
 
             Container(
@@ -510,16 +513,18 @@ _displayDialog(BuildContext context) async {
                       child: CupertinoTextField(
                         prefix: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Icon(Icons.search),
+                          child: Icon(Icons.search,color: Colors.grey,),
                         ),
                         style: textStyle,
                         cursorColor: Colors.green,
                         suffix: IconButton(icon: Icon(Icons.clear), onPressed: () async {
                           print('clicked');
+                          search.clear();
                           await getData(context, "SELECT * FROM gd_accounts ORDER BY company_name");
+
                           setState(() {});
                           FocusScope.of(context).requestFocus(FocusNode());
-                          search.clear();
+
                         }),
                         placeholder: 'Search',
                         padding: EdgeInsets.fromLTRB(10,15,10,15),
@@ -535,7 +540,22 @@ _displayDialog(BuildContext context) async {
                     ),
                   ),
 
-                  IconButton(icon: Icon(Icons.tune), onPressed: ()=>_displayDialog(context))
+                  GestureDetector(
+                      onTap: ()=>_displayDialog(context),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 5),
+                        child: Container(
+                          width: 60,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(13),
+                            color: Colors.grey.shade200
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset('images/filter.png'),
+                          ),),
+                      ))
 
                 ],
               ),
@@ -562,18 +582,11 @@ _displayDialog(BuildContext context) async {
                                     CupertinoPageRoute(builder: (context) => RecentlyViewed(uname: widget.uname,uid: id,)),
                                   );
                                 },
-                                child: Label(text: 'Recently Viewed >',size: 18,))),
+                                child: Label(text: 'Recently Viewed',size: 18,))),
                       ),
                     ),
 
-                    Container(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Label(text: 'All',size: 18,),
-                      ),
-                      color: Colors.grey,
-                    ),
+
                     results!=null?Expanded(
                       child: ListView.builder(
                         physics: ScrollPhysics(),

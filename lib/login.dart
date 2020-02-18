@@ -8,12 +8,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 
-class LogIn extends StatelessWidget {
+class LogIn extends StatefulWidget {
 
 
+  @override
+  _LogInState createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
   TextEditingController uname = TextEditingController();
+
   TextEditingController password = TextEditingController();
 
+  bool visible;
 
   getData(BuildContext context) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -60,6 +67,13 @@ class LogIn extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    visible=false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -79,18 +93,37 @@ class LogIn extends StatelessWidget {
               child: Image.asset('images/logo.png'),
             ),
 
-            Label(text: 'Welcome to Grease Ducks\nPlese Sign In',size: 20,color: Colors.orange,align: TextAlign.center,),
+            Label(text: 'Welcome to Grease Ducks\nPlease Sign In',size: 20,color: Colors.orange,align: TextAlign.center,),
 
             Padding(
               padding: const EdgeInsets.fromLTRB(40,40,40,0),
-              child: InputField(type: TextInputType.emailAddress,hint: 'Username',controller: uname),
+              child: CupertinoTextField(
+                style: TextStyle(color: Colors.black),
+                cursorColor: Colors.green,
+                padding: EdgeInsets.fromLTRB(10,15,10,15),
+                keyboardType: TextInputType.text,
+                controller: uname,
+                placeholder: 'Username',
+                placeholderStyle: TextStyle(color: Colors.black),
+                onSubmitted: (x){
+                  setState(() {
+                    visible = true;
+                  });
+                },
+
+              ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: InputField(type: TextInputType.text,hint: 'Password',controller: password,ispassword: true,onTap: (){
+            Visibility(
+              maintainState: true,
+              maintainAnimation: true,
+              visible: visible,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: InputField(type: TextInputType.text,hint: 'Password',controller: password,ispassword: true,onTap: (){
 
-                getData(context);},),
+                  getData(context);},),
+              ),
             ),
 
 
