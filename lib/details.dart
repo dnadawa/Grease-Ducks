@@ -32,7 +32,7 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  var line1, line2, city, zip,country;
+  var line1, line2, city, zip,country,_accountManager,_region;
   Results results;
   getData(BuildContext context, String query) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -68,6 +68,34 @@ class _DetailsState extends State<Details> {
     //await conn.close();
   }
 
+  getAccountManager(BuildContext context, String query) async {
+    final conn = await MySqlConnection.connect(ConnectionSettings(
+        host: 'greaseducks.com',
+        port: 3306,
+        user: 'grease_gdt',
+        password: 'Yq4aOB9;NANh',
+        db: 'grease_gd'));
+
+    results = await conn.query(query);
+    var row = results.elementAt(0);
+    _accountManager = row['firstname']+' '+row['lastname'];
+    setState(() {});
+  }
+
+  getRegion(BuildContext context, String query) async {
+    final conn = await MySqlConnection.connect(ConnectionSettings(
+        host: 'greaseducks.com',
+        port: 3306,
+        user: 'grease_gdt',
+        password: 'Yq4aOB9;NANh',
+        db: 'grease_gd'));
+
+    results = await conn.query(query);
+    var row = results.elementAt(0);
+    _region = row['name'];
+    setState(() {});
+  }
+
   var sunS,
       sunE,
       monS,
@@ -92,6 +120,8 @@ class _DetailsState extends State<Details> {
     visible = true;
     getData(context,
         "SELECT name,value FROM gd_addresses WHERE element_id='${widget.id}' AND address_type='1'");
+    getAccountManager(context, "SELECT * FROM gd_contacts WHERE id='${widget.accountManager}'");
+    getRegion(context, "SELECT * FROM gd_regions WHERE id='${widget.region}'");
 
     if (widget.hours != '') {
       setState(() {
@@ -298,7 +328,8 @@ class _DetailsState extends State<Details> {
                         Container(
                           width: 70,
                           height:70,
-                          color: Colors.red,
+                          child: Image.asset('images/map.png'),
+
                         )
                       ],
                     ),
@@ -318,19 +349,19 @@ class _DetailsState extends State<Details> {
                           size: 24,
                         ),
                         SizedBox(height: 8),
-                        Label(
-                          text: 'Business',
-                          color: Colors.grey,
-                          size: 20,
-                        ),
-                        Label(
-                          text: 'number',
-                          color: Colors.grey,
-                          size: 17,
-                          bold: false,
-                        ),
-
-                        SizedBox(height: 15),
+//                        Label(
+//                          text: 'Business',
+//                          color: Colors.grey,
+//                          size: 20,
+//                        ),
+//                        Label(
+//                          text: 'number',
+//                          color: Colors.grey,
+//                          size: 17,
+//                          bold: false,
+//                        ),
+//
+//                        SizedBox(height: 15),
                         Label(
                           text: 'Website',
                           color: Colors.grey,
@@ -565,7 +596,7 @@ class _DetailsState extends State<Details> {
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'region',
+                              text: _region??'N/A',
                               color: Colors.grey,
                               size: 19,
                               bold: false,
@@ -601,7 +632,7 @@ class _DetailsState extends State<Details> {
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: widget.industry,
+                              text: widget.status,
                               color: Colors.green,
                               size: 19,
                               bold: false,
@@ -619,7 +650,7 @@ class _DetailsState extends State<Details> {
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: widget.paymentType,
+                              text: widget.paymentType??'N/A',
                               color: Colors.grey,
                               size: 19,
                               bold: false,
@@ -657,7 +688,7 @@ class _DetailsState extends State<Details> {
                             SizedBox(
                               width: 160,
                               child: Label(
-                                text: 'account_manager',
+                                text: _accountManager??'N/A',
                                 color: Colors.grey,
                                 size: 19,
                                 bold: false,

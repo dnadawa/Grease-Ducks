@@ -80,7 +80,24 @@ class _RecentlyViewedState extends State<RecentlyViewed> {
                   String hours = recentlyViewed.elementAt(i)['hours'].toString();
                   Navigator.push(
                     context,
-                    CupertinoPageRoute(builder: (context) => Details(hours: hours,comName: recentlyViewed.elementAt(i)['company_name'],uname: widget.uname,id: recentlyViewed.elementAt(i)['id'].toString(),)),
+                    CupertinoPageRoute(builder: (context) => Details(
+                      hours: hours,
+                      comName: recentlyViewed.elementAt(i)['company_name']??'N/A',
+                      suffix: '(${recentlyViewed.elementAt(i)['suffix']??'N/A'})',
+                      legalName: recentlyViewed.elementAt(i)['legal_business_name']??'N/A',
+                      uname: widget.uname,
+                      id: recentlyViewed.elementAt(i)['id'].toString()??'N/A',
+                      website: recentlyViewed.elementAt(i)['website'].toString()??'N/A',
+                      paymentType: recentlyViewed.elementAt(i)['preferred_payment'].toString()??'N/A',
+                      paymentTerms: recentlyViewed.elementAt(i)['payment_terms'].toString()??'N/A',
+                      type: recentlyViewed.elementAt(i)['type'].toString()??'N/A',
+                      industry: recentlyViewed.elementAt(i)['industry'].toString()??'N/A',
+                      status: recentlyViewed.elementAt(i)['status'].toString()??'N/A',
+                      image: recentlyViewed.elementAt(i)['image'].toString(),
+                      accountManager: recentlyViewed.elementAt(i)['account_manager'].toString(),
+                      region: recentlyViewed.elementAt(i)['region'].toString(),
+
+                    ),),
                   );
                 },
               ),

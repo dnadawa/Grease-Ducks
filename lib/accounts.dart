@@ -637,6 +637,8 @@ _displayDialog(BuildContext context) async {
                                       industry: results.elementAt(i)['industry'].toString()??'N/A',
                                       status: results.elementAt(i)['status'].toString()??'N/A',
                                       image: results.elementAt(i)['image'].toString(),
+                                      accountManager: results.elementAt(i)['account_manager'].toString(),
+                                      region: results.elementAt(i)['region'].toString(),
 
                                     ),
                                     ),
