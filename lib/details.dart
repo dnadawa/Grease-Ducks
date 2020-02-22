@@ -10,8 +10,21 @@ class Details extends StatefulWidget {
   final String comName;
   final String uname;
   final String id;
+  final String legalName;
+  final String suffix;
+  final String website;
+  final String type;
+  final String region;
+  final String industry;
+  final String status;
+  final String paymentType;
+  final String paymentTerms;
+  final String accountManager;
+  final String image;
 
-  const Details({Key key, this.hours, this.comName, this.uname, this.id})
+
+
+  const Details({Key key, this.hours, this.comName='', this.uname='', this.id='', this.legalName='N/A', this.suffix='N/A', this.website='N/A', this.type='N/A', this.region='N/A', this.industry='N/A', this.status='N/A', this.paymentType='N/A', this.paymentTerms='N/A', this.accountManager='N/A', this.image=''})
       : super(key: key);
 
   @override
@@ -19,7 +32,7 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  var line1, line2, city, zip;
+  var line1, line2, city, zip,country;
   Results results;
   getData(BuildContext context, String query) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -42,6 +55,9 @@ class _DetailsState extends State<Details> {
       }
       if (row['name'] == 'zip') {
         zip = row['value'];
+      }
+      if (row['name'] == 'country') {
+        country = row['value'];
       }
     }
 
@@ -143,7 +159,7 @@ class _DetailsState extends State<Details> {
           Container(
             color: Theme.of(context).primaryColor,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 0, 15),
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
               child: Row(
                 children: <Widget>[
                   Container(
@@ -164,7 +180,7 @@ class _DetailsState extends State<Details> {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(30, 0, 20, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 10, 10),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,28 +190,33 @@ class _DetailsState extends State<Details> {
 
                     Row(
                       children: <Widget>[
-                        Container(
-                          width: 150,
+                        widget.image!=''?Container(
                           height: 80,
+                          child: Image.network('http://www.greaseducks.com/accounts/uploads/${widget.image}'),
                           color: Colors.teal,
-                        ),
+                        ):null,
+                        SizedBox(width: 10),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Label(
-                              text: 'Golden Goose',
-                              color: Color(0xffff6600),
-                              size: 24,
+                            SizedBox(
+                              width: widget.image!=''?205:double.infinity,
+                              child: Label(
+                                text: widget.legalName,
+                                color: Color(0xffff6600),
+                                size: 20,
+                                bold: false,
+                              ),
                             ),
                             Label(
-                              text: 'McDonalds',
+                              text: widget.comName,
                               color: Color(0xffff6600),
-                              size: 24,
+                              size: 22,
                             ),
                             Label(
-                              text: '(Pemborge)',
+                              text: widget.suffix,
                               color: Colors.grey,
-                              size: 17,
+                              size: 16,
                             ),
                           ],
                         ),
@@ -210,7 +231,7 @@ class _DetailsState extends State<Details> {
                           CircleAvatar(
                             backgroundColor: Colors.blue,
                             radius: 30,
-                            child: Icon(Icons.message),
+                            child: Icon(Icons.message,color: Colors.white,),
                           ),
                           CircleAvatar(
                             backgroundColor: Colors.blue,
@@ -257,17 +278,17 @@ class _DetailsState extends State<Details> {
                               size: 24,
                             ),
                             Label(
-                              text: '1441 Vine Rd.',
+                              text: line1!=null?line1:'Loading',
                               color: Colors.grey,
                               size: 17,
                             ),
                             Label(
-                              text: 'Pemberton, BC 443',
+                              text: city!=null&&zip!=null?'$city ,$zip':'Loading',
                               color: Colors.grey,
                               size: 17,
                             ),
                             Label(
-                              text: 'Canada',
+                              text: country!=null?country:'Loading',
                               color: Colors.grey,
                               size: 17,
                             ),
@@ -303,7 +324,7 @@ class _DetailsState extends State<Details> {
                           size: 20,
                         ),
                         Label(
-                          text: '(609) 34432 234',
+                          text: 'number',
                           color: Colors.grey,
                           size: 17,
                           bold: false,
@@ -316,7 +337,7 @@ class _DetailsState extends State<Details> {
                           size: 20,
                         ),
                         Label(
-                          text: 'www.greaseducks.com',
+                          text: widget.website,
                           color: Colors.grey,
                           size: 17,
                           bold: false,
@@ -347,7 +368,7 @@ class _DetailsState extends State<Details> {
                                   Label(
                                     text: 'Sunday  ',
                                     color: Colors.grey,
-                                    size: 17,
+                                    size: 15,
                                   ),
                                   SizedBox(
                                     width: 20,
@@ -357,7 +378,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$sunS h - $sunE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -368,7 +389,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Monday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -379,7 +400,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$monS h - $monE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -390,7 +411,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Tuesday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -401,7 +422,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$tueS h - $tueE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -412,7 +433,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Wednesday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -423,7 +444,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$wedS h - $wedE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -434,7 +455,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Thursday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -445,7 +466,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$thuS h - $thuE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -456,7 +477,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Friday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -467,7 +488,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$friS h - $friE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -478,7 +499,7 @@ class _DetailsState extends State<Details> {
                                 children: <Widget>[
                                   Label(
                                     text: 'Saturday  ',
-                                    size: 17,
+                                    size: 15,
                                     color: Colors.grey,
                                   ),
                                   SizedBox(
@@ -489,7 +510,7 @@ class _DetailsState extends State<Details> {
                                         right: MediaQuery.of(context).size.width / 3),
                                     child: Label(
                                       text: '$satS h - $satE h',
-                                      size: 17,
+                                      size: 15,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -522,13 +543,13 @@ class _DetailsState extends State<Details> {
                            Label(
                              text: 'Type',
                              color: Colors.grey,
-                             size: 20,
+                             size: 19,
                            ),
                            SizedBox(width: 10),
                            Label(
-                             text: 'Client',
+                             text: widget.type,
                              color: Colors.grey,
-                             size: 20,
+                             size: 19,
                              bold: false,
                            ),
                          ],
@@ -538,15 +559,15 @@ class _DetailsState extends State<Details> {
                         Row(
                           children: <Widget>[
                             Label(
-                              text: 'Rigeon',
+                              text: 'Region',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'RMOW',
+                              text: 'region',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                               bold: false,
                             ),
                           ],
@@ -558,13 +579,13 @@ class _DetailsState extends State<Details> {
                             Label(
                               text: 'Industry',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'Restaurant Class 1',
+                              text: widget.industry,
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                               bold: false,
                             ),
                           ],
@@ -576,13 +597,13 @@ class _DetailsState extends State<Details> {
                             Label(
                               text: 'Status',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'Active',
+                              text: widget.industry,
                               color: Colors.green,
-                              size: 20,
+                              size: 19,
                               bold: false,
                             ),
                           ],
@@ -594,13 +615,13 @@ class _DetailsState extends State<Details> {
                             Label(
                               text: 'Prefferd Payment Type',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'Cheque',
+                              text: widget.paymentType,
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                               bold: false,
                             ),
                           ],
@@ -612,13 +633,13 @@ class _DetailsState extends State<Details> {
                             Label(
                               text: 'Payment Terms',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
                             Label(
-                              text: 'Net 30',
+                              text: widget.paymentTerms,
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                               bold: false,
                             ),
                           ],
@@ -630,14 +651,17 @@ class _DetailsState extends State<Details> {
                             Label(
                               text: 'Account Manager',
                               color: Colors.grey,
-                              size: 20,
+                              size: 19,
                             ),
                             SizedBox(width: 10),
-                            Label(
-                              text: 'Alex Collins',
-                              color: Colors.grey,
-                              size: 20,
-                              bold: false,
+                            SizedBox(
+                              width: 160,
+                              child: Label(
+                                text: 'account_manager',
+                                color: Colors.grey,
+                                size: 19,
+                                bold: false,
+                              ),
                             ),
                           ],
                         ),

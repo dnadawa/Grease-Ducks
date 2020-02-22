@@ -53,7 +53,7 @@ getData(BuildContext context,String query) async {
   @override
   void initState() {
     // TODO: implement initState
-    getData(context,"SELECT suffix,company_name,hours,id FROM gd_accounts ORDER BY company_name");
+    getData(context,"SELECT * FROM gd_accounts ORDER BY company_name");
     status = 'All';
     type = 'All';
     region = 'All';
@@ -623,7 +623,23 @@ _displayDialog(BuildContext context) async {
 
                                   Navigator.push(
                                     context,
-                                    CupertinoPageRoute(builder: (context) => Details(hours: hours,comName: results.elementAt(i)['company_name'],uname: widget.uname,id: results.elementAt(i)['id'].toString(),)),
+                                    CupertinoPageRoute(builder: (context) => Details(
+                                      hours: hours,
+                                      comName: results.elementAt(i)['company_name']??'N/A',
+                                      suffix: '(${results.elementAt(i)['suffix']??'N/A'})',
+                                      legalName: results.elementAt(i)['legal_business_name']??'N/A',
+                                      uname: widget.uname,
+                                      id: results.elementAt(i)['id'].toString()??'N/A',
+                                      website: results.elementAt(i)['website'].toString()??'N/A',
+                                      paymentType: results.elementAt(i)['preferred_payment'].toString()??'N/A',
+                                      paymentTerms: results.elementAt(i)['payment_terms'].toString()??'N/A',
+                                      type: results.elementAt(i)['type'].toString()??'N/A',
+                                      industry: results.elementAt(i)['industry'].toString()??'N/A',
+                                      status: results.elementAt(i)['status'].toString()??'N/A',
+                                      image: results.elementAt(i)['image'].toString(),
+
+                                    ),
+                                    ),
                                   );
                                 },
                               ),
