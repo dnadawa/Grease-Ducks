@@ -138,31 +138,6 @@ Results results;
             ),
           ),
 
-          Container(
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.arrow_back_ios),
-                    GestureDetector(
-                        onTap: ()=>Navigator.pop(context),
-                        child: Label(text: 'Accounts',))
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Label(text: 'Services',),
-                    Icon(Icons.arrow_forward_ios),
-
-                  ],
-                )
-              ],
-            ),
-          ),
-
-
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -171,7 +146,8 @@ Results results;
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Label(text: widget.comName,color: Color(0xffff6600),size: 24,),
+                  Label(text: 'Golden Goose',color: Color(0xffff6600),size: 24,),
+                  Label(text: 'McDonalds',color: Color(0xffff6600),size: 24,),
                   SizedBox(height: 10,),
                   Label(text: line1!=null?line1:'Loading',color: Colors.grey,size: 17,),
                   line2!=null?Label(text: line2!=null?line2:'Loading',color: Colors.grey,size: 17,):SizedBox(height: 0,),
