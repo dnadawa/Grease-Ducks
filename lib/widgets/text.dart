@@ -7,8 +7,9 @@ class Label extends StatelessWidget {
   final double size;
   final Color color;
   final TextAlign align;
+  final bool bold;
 
-  const Label({Key key, this.text='', this.size=14, this.color=Colors.black, this.align=TextAlign.start}) : super(key: key);
+   Label({Key key, this.text='', this.size=14, this.color=Colors.black, this.align=TextAlign.start, this.bold=true}) : super(key: key);
 
 
   @override
@@ -17,7 +18,7 @@ class Label extends StatelessWidget {
       text,
       style: TextStyle(
           fontSize: size,
-          fontWeight: FontWeight.bold,
+          fontWeight: bold?FontWeight.bold:FontWeight.w400,
           color: color
       ),
       textAlign: align,
