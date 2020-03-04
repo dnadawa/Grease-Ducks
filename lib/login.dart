@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:grease_ducks/verify/verify.dart';
 import 'package:grease_ducks/widgets/text.dart';
 import 'package:grease_ducks/widgets/textbox.dart';
 import 'package:grease_ducks/widgets/toast.dart';
@@ -129,7 +130,14 @@ class _LogInState extends State<LogIn> {
 
             Padding(
               padding: const EdgeInsets.all(30),
-              child: Label(text: 'Forgot My Password',color: Colors.green,size: 18,),
+              child: GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(builder: (context) => VerifyEmail()),
+                    );
+                  },
+                  child: Label(text: 'Forgot My Password',color: Colors.green,size: 18,)),
             ),
 
 
