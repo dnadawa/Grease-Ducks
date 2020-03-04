@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:grease_ducks/widgets/text.dart';
 import 'package:mysql1/mysql1.dart'
     show ConnectionSettings, MySqlConnection, Results;
+import 'package:url_launcher/url_launcher.dart';
 
 class Details extends StatefulWidget {
   final String hours;
@@ -21,10 +24,11 @@ class Details extends StatefulWidget {
   final String paymentTerms;
   final String accountManager;
   final String image;
+  final String email;
 
 
 
-  const Details({Key key, this.hours, this.comName='', this.uname='', this.id='', this.legalName='N/A', this.suffix='N/A', this.website='N/A', this.type='N/A', this.region='N/A', this.industry='N/A', this.status='N/A', this.paymentType='N/A', this.paymentTerms='N/A', this.accountManager='N/A', this.image=''})
+  const Details({Key key, this.hours, this.comName='', this.uname='', this.id='', this.legalName='N/A', this.suffix='N/A', this.website='N/A', this.type='N/A', this.region='N/A', this.industry='N/A', this.status='N/A', this.paymentType='N/A', this.paymentTerms='N/A', this.accountManager='N/A', this.image='', this.email})
       : super(key: key);
 
   @override
@@ -32,7 +36,7 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  var line1, line2, city, zip,country,_accountManager,_region;
+  var line1, line2, city, zip,country,_accountManager,_region,_phone;
   Results results;
   getData(BuildContext context, String query) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -96,6 +100,84 @@ class _DetailsState extends State<Details> {
     setState(() {});
   }
 
+  getPhone(BuildContext context, String query) async {
+    final conn = await MySqlConnection.connect(ConnectionSettings(
+        host: 'greaseducks.com',
+        port: 3306,
+        user: 'grease_gdt',
+        password: 'Yq4aOB9;NANh',
+        db: 'grease_gd'));
+
+    results = await conn.query(query);
+    var row = results.elementAt(0);
+    _phone = row['value'].replaceAll('/','');
+    setState(() {});
+  }
+
+
+  sendMessage(String number) async {
+    // Android
+
+    if (Platform.isAndroid) {
+      var uri = 'sms:+$number?body=';
+      if (await canLaunch(uri)) {
+        await launch(uri);
+      }
+      else{
+        throw 'error';
+      }
+    }else if (Platform.isIOS) {
+      var uri = 'sms:$number';
+      if (await canLaunch(uri)) {
+        await launch(uri);
+      }
+      else{
+        throw 'error';
+      }
+    }
+
+  }
+
+
+  sendMail(String mail) async {
+    var url = 'mailto:$mail?subject=&body=';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  openMap() async {
+    String add = addressCheck();
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$add';
+
+
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      throw 'Could not open the map.';
+    }
+  }
+
+  String addressCheck(){
+    var line_1 = line1.split(' ');
+    var x = '';
+    var y = '';
+    line_1.forEach((item){
+      x = x+'+'+item;
+    });
+
+    var zips = zip.split(' ');
+    zips.forEach((item){
+      y = y+'+'+item;
+    });
+
+    String mapString = x+'+'+city+y+'+'+country+'+';
+return mapString;
+
+  }
+
   var sunS,
       sunE,
       monS,
@@ -122,6 +204,7 @@ class _DetailsState extends State<Details> {
         "SELECT name,value FROM gd_addresses WHERE element_id='${widget.id}' AND address_type='1'");
     getAccountManager(context, "SELECT * FROM gd_contacts WHERE id='${widget.accountManager}'");
     getRegion(context, "SELECT * FROM gd_regions WHERE id='${widget.region}'");
+    getPhone(context, "SELECT * FROM gd_dynamic_fields WHERE element_id='${widget.id}' AND type='account' AND `key`='Business'");
 
     if (widget.hours != '') {
       setState(() {
@@ -258,33 +341,42 @@ class _DetailsState extends State<Details> {
                       child: ButtonBar(
                         alignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          CircleAvatar(
-                            backgroundColor: Colors.blue,
-                            radius: 30,
-                            child: Icon(Icons.message,color: Colors.white,),
-                          ),
-                          CircleAvatar(
-                            backgroundColor: Colors.blue,
-                            radius: 30,
-                            child: Icon(
-                              Icons.call,
-                              color: Colors.white,
+                          GestureDetector(
+                            onTap: ()=>sendMessage(_phone),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              radius: 30,
+                              child: Icon(Icons.message,color: Colors.white,),
                             ),
                           ),
-                          CircleAvatar(
-                            backgroundColor: Colors.blue,
-                            radius: 30,
-                            child: Icon(
-                              Icons.videocam,
-                              color: Colors.white,
+                          GestureDetector(
+                            onTap: (){launch("tel://$_phone");},
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              radius: 30,
+                              child: Icon(
+                                Icons.call,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          CircleAvatar(
-                            backgroundColor: Colors.blue,
-                            radius: 30,
-                            child: Icon(
-                              Icons.mail,
-                              color: Colors.white,
+//                          CircleAvatar(
+//                            backgroundColor: Colors.blue,
+//                            radius: 30,
+//                            child: Icon(
+//                              Icons.videocam,
+//                              color: Colors.white,
+//                            ),
+//                          ),
+                          GestureDetector(
+                            onTap: ()=>sendMail(widget.email),
+                            child: CircleAvatar(
+                              backgroundColor: Colors.blue,
+                              radius: 30,
+                              child: Icon(
+                                Icons.mail,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -325,11 +417,14 @@ class _DetailsState extends State<Details> {
                           ],
                         ),
 
-                        Container(
-                          width: 70,
-                          height:70,
-                          child: Image.asset('images/map.png'),
+                        GestureDetector(
+                          onTap: ()=>openMap(),
+                          child: Container(
+                            width: 70,
+                            height:70,
+                            child: Image.asset('images/map.png'),
 
+                          ),
                         )
                       ],
                     ),
@@ -349,19 +444,19 @@ class _DetailsState extends State<Details> {
                           size: 24,
                         ),
                         SizedBox(height: 8),
-//                        Label(
-//                          text: 'Business',
-//                          color: Colors.grey,
-//                          size: 20,
-//                        ),
-//                        Label(
-//                          text: 'number',
-//                          color: Colors.grey,
-//                          size: 17,
-//                          bold: false,
-//                        ),
-//
-//                        SizedBox(height: 15),
+                        Label(
+                          text: 'Business',
+                          color: Colors.grey,
+                          size: 20,
+                        ),
+                        Label(
+                          text: _phone!=null?_phone:'N/A',
+                          color: Colors.grey,
+                          size: 17,
+                          bold: false,
+                        ),
+
+                        SizedBox(height: 15),
                         Label(
                           text: 'Website',
                           color: Colors.grey,
@@ -704,6 +799,42 @@ class _DetailsState extends State<Details> {
                   ],
                 ),
               ),
+            ),
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.black54,width: 0.3),
+                ),
+                color: Colors.grey.shade200,
+    ),
+            child: SizedBox(
+              height: 50,
+              width: double.infinity,
+              child: IconTheme.merge( // Default with the inactive state.
+                data: IconThemeData(color: Colors.green, size: 35),
+                child: DefaultTextStyle( // Default with the inactive state.
+                  style: CupertinoTheme.of(context).textTheme.tabLabelTextStyle.copyWith(color: Colors.green),
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                            width: 30,
+                            height: 30,
+                            child: Image.asset('images/contacts.png')),
+                        Container(
+                            width: 30,
+                            height: 30,
+                            child: Image.asset('images/cal.png'))
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
             ),
           ),
         ],

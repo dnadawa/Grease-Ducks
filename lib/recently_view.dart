@@ -96,6 +96,7 @@ class _RecentlyViewedState extends State<RecentlyViewed> {
                       image: recentlyViewed.elementAt(i)['image'].toString(),
                       accountManager: recentlyViewed.elementAt(i)['account_manager'].toString(),
                       region: recentlyViewed.elementAt(i)['region'].toString(),
+                      email: recentlyViewed.elementAt(i)['email'].toString(),
 
                     ),),
                   );

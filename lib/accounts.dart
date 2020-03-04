@@ -639,6 +639,7 @@ _displayDialog(BuildContext context) async {
                                       image: results.elementAt(i)['image'].toString(),
                                       accountManager: results.elementAt(i)['account_manager'].toString(),
                                       region: results.elementAt(i)['region'].toString(),
+                                      email: results.elementAt(i)['email'].toString(),
 
                                     ),
                                     ),
