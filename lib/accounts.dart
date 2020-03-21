@@ -20,7 +20,8 @@ class _AccountsState extends State<Accounts> {
   String status,type,region,industry,city,sortby,sortOrder;
 Results results,recentlyViewed;
 TextEditingController search = TextEditingController();
-
+IconData _icon;
+String searchQuery;
 
 getData(BuildContext context,String query) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -62,6 +63,12 @@ getData(BuildContext context,String query) async {
     sortby = 'company_name';
     sortOrder = 'Ascending';
     super.initState();
+
+    setState(() {
+      _icon = Icons.search;
+    });
+
+
   }
 
 
@@ -492,6 +499,7 @@ _displayDialog(BuildContext context) async {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(15,0,0,15),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Container(width:35,height:35,child: Image.asset('images/home.png')),
               SizedBox(width: 10,),
@@ -513,7 +521,20 @@ _displayDialog(BuildContext context) async {
                       child: CupertinoTextField(
                         prefix: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Icon(Icons.search,color: Colors.grey,),
+                          child: IconButton(icon: Icon(_icon,color: Colors.grey,),onPressed: (){
+                            if(_icon==Icons.search){
+                              setState(() {
+                                _icon = Icons.phone;
+                              });
+                            }
+                            else{
+                              setState(() {
+                                _icon = Icons.search;
+                              });
+                            }
+//                                  print(searchQuery);
+
+                          },),
                         ),
                         style: textStyle,
                         cursorColor: Colors.green,
@@ -527,15 +548,26 @@ _displayDialog(BuildContext context) async {
 
                         }),
                         placeholder: 'Search',
-                        padding: EdgeInsets.fromLTRB(10,15,10,15),
+                        padding: EdgeInsets.fromLTRB(0,15,5,15),
                         keyboardType: TextInputType.text,
                         controller: search,
                         onEditingComplete: () async {
-                          await getData(context, "SELECT * FROM gd_accounts WHERE company_name LIKE '%${search.text}%'");
+                          if(_icon==Icons.search){
+                            print('search called');
+                            searchQuery = "SELECT * FROM gd_accounts WHERE company_name LIKE '%${search.text}%' OR keywords LIKE '%${search.text}%' OR legal_business_name LIKE '%${search.text}%'";
+                            await getData(context, searchQuery);
+                          }
+                          else{
+                            print('phone called');
+                            searchQuery = "SELECT gd_accounts.*,gd_dynamic_fields.* FROM gd_accounts INNER JOIN gd_dynamic_fields ON gd_accounts.id = gd_dynamic_fields.element_id WHERE gd_dynamic_fields.value LIKE '%${search.text}%' AND gd_dynamic_fields.key = 'Business'";
+                            print(searchQuery);
+                            await getData(context, searchQuery);
+                          }
+
                           setState(() {});
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
-
+                                  //SELECT * FROM gd_accounts WHERE company_name LIKE '%${search.text}%' OR keywords LIKE '%${search.text}%' OR legal_business_name LIKE '%${search.text}%'
                       ),
                     ),
                   ),
@@ -625,17 +657,17 @@ _displayDialog(BuildContext context) async {
                                     context,
                                     CupertinoPageRoute(builder: (context) => Details(
                                       hours: hours,
-                                      comName: results.elementAt(i)['company_name']??'N/A',
-                                      suffix: '(${results.elementAt(i)['suffix']??'N/A'})',
-                                      legalName: results.elementAt(i)['legal_business_name']??'N/A',
+                                      comName: results.elementAt(i)['company_name']??'',
+                                      suffix: '(${results.elementAt(i)['suffix']??''})',
+                                      legalName: results.elementAt(i)['legal_business_name']??'',
                                       uname: widget.uname,
-                                      id: results.elementAt(i)['id'].toString()??'N/A',
-                                      website: results.elementAt(i)['website'].toString()??'N/A',
-                                      paymentType: results.elementAt(i)['preferred_payment'].toString()??'N/A',
-                                      paymentTerms: results.elementAt(i)['payment_terms'].toString()??'N/A',
-                                      type: results.elementAt(i)['type'].toString()??'N/A',
-                                      industry: results.elementAt(i)['industry'].toString()??'N/A',
-                                      status: results.elementAt(i)['status'].toString()??'N/A',
+                                      id: results.elementAt(i)['id'].toString()??'',
+                                      website: results.elementAt(i)['website'].toString()??'',
+                                      paymentType: results.elementAt(i)['preferred_payment'].toString()??'',
+                                      paymentTerms: results.elementAt(i)['payment_terms'].toString()??'',
+                                      type: results.elementAt(i)['type'].toString()??'',
+                                      industry: results.elementAt(i)['industry'].toString()??'',
+                                      status: results.elementAt(i)['status'].toString()??'',
                                       image: results.elementAt(i)['image'].toString(),
                                       accountManager: results.elementAt(i)['account_manager'].toString(),
                                       region: results.elementAt(i)['region'].toString(),

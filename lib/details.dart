@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:grease_ducks/widgets/big-image.dart';
 import 'package:grease_ducks/widgets/text.dart';
+import 'package:intl/intl.dart';
 import 'package:mysql1/mysql1.dart'
     show ConnectionSettings, MySqlConnection, Results;
 import 'package:url_launcher/url_launcher.dart';
@@ -28,7 +30,8 @@ class Details extends StatefulWidget {
 
 
 
-  const Details({Key key, this.hours, this.comName='', this.uname='', this.id='', this.legalName='N/A', this.suffix='N/A', this.website='N/A', this.type='N/A', this.region='N/A', this.industry='N/A', this.status='N/A', this.paymentType='N/A', this.paymentTerms='N/A', this.accountManager='N/A', this.image='', this.email})
+
+Details({Key key, this.hours, this.comName='', this.uname='', this.id='', this.legalName='N/A', this.suffix='', this.website='', this.type='', this.region='N/A', this.industry='', this.status='N/A', this.paymentType='',  this.paymentTerms='', this.accountManager='N/A', this.image='', this.email})
       : super(key: key);
 
   @override
@@ -36,7 +39,8 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  var line1, line2, city, zip,country,_accountManager,_region,_phone;
+  bool suffixShow=false,webShow=false,phoneShow=false,typeShow=false,industryShow=false,paymentShow=false,paymentTermsshow=false;
+  var line1, line2, city, zip,country,_accountManager,_region,_phone='';
   Results results;
   getData(BuildContext context, String query) async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
@@ -111,6 +115,9 @@ class _DetailsState extends State<Details> {
     results = await conn.query(query);
     var row = results.elementAt(0);
     _phone = row['value'].replaceAll('/','');
+    if(_phone!=''){
+      phoneShow=true;
+    }
     setState(() {});
   }
 
@@ -213,6 +220,8 @@ return mapString;
 
       body = jsonDecode(widget.hours);
       sunS = body['su']['start'];
+      //String fmt = DateFormat("HH:mm").format(sunS);
+      //print(fmt);
       monS = body['m']['start'];
       tueS = body['tu']['start'];
       wedS = body['w']['start'];
@@ -231,22 +240,48 @@ return mapString;
       setState(() {
         visible = false;
       });
-      sunS = '0:0';
-      tueS = '0:0';
-      wedS = '0:0';
-      monS = '0:0';
-      thuS = '0:0';
-      friS = '0:0';
-      satS = '0:0';
+      sunS = '00:00';
+      tueS = '00:00';
+      wedS = '00:00';
+      monS = '00:00';
+      thuS = '00:00';
+      friS = '00:00';
+      satS = '00:00';
 
-      sunE = '0:0';
-      monE = '0:0';
-      tueE = '0:0';
-      wedE = '0:0';
-      thuE = '0:0';
-      friE = '0:0';
-      satE = '0:0';
+      sunE = '00:00';
+      monE = '00:00';
+      tueE = '00:00';
+      wedE = '00:00';
+      thuE = '00:00';
+      friE = '00:00';
+      satE = '00:00';
     }
+
+
+
+
+    if(widget.suffix!='()'){
+      suffixShow=true;
+    }
+    if(widget.website!=''){
+      webShow=true;
+    }
+
+    if(widget.type!=''){
+      typeShow=true;
+    }
+    if(widget.industry!=''){
+      industryShow=true;
+    }
+    if(widget.paymentType!=''){
+      paymentShow=true;
+    }
+
+    if(widget.paymentTerms!=''){
+      paymentTermsshow=true;
+    }
+
+
   }
 
   @override
@@ -274,6 +309,7 @@ return mapString;
             child: Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
                       width: 35,
@@ -303,10 +339,18 @@ return mapString;
 
                     Row(
                       children: <Widget>[
-                        widget.image!=''?Container(
-                          height: 80,
-                          child: Image.network('http://www.greaseducks.com/accounts/uploads/${widget.image}'),
-                          color: Colors.teal,
+                        widget.image!=''?GestureDetector(
+                          onTap: (){
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(builder: (context) => BigImage(url: 'http://www.greaseducks.com/accounts/uploads/${widget.image}',)),
+                            );
+                          },
+                          child: Container(
+                            height: 80,
+                            child: Image.network('http://www.greaseducks.com/accounts/uploads/${widget.image}'),
+                            color: Colors.teal,
+                          ),
                         ):null,
                         SizedBox(width: 10),
                         Column(
@@ -326,10 +370,13 @@ return mapString;
                               color: Color(0xffff6600),
                               size: 22,
                             ),
-                            Label(
-                              text: widget.suffix,
-                              color: Colors.grey,
-                              size: 16,
+                            Visibility(
+                              visible: suffixShow,
+                              child: Label(
+                                text: widget.suffix,
+                                color: Colors.grey,
+                                size: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -339,20 +386,21 @@ return mapString;
                     Padding(
                       padding: const EdgeInsets.all(15),
                       child: ButtonBar(
-                        alignment: MainAxisAlignment.spaceBetween,
+                        alignment: MainAxisAlignment.center,
                         children: <Widget>[
                           GestureDetector(
-                            onTap: ()=>sendMessage(_phone),
+                            onTap: ()=>phoneShow?sendMessage(_phone):null,
                             child: CircleAvatar(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: phoneShow?Colors.blue:Colors.grey,
                               radius: 30,
                               child: Icon(Icons.message,color: Colors.white,),
                             ),
                           ),
+                          SizedBox(width: 20,),
                           GestureDetector(
-                            onTap: (){launch("tel://$_phone");},
+                            onTap: (){phoneShow?launch("tel://$_phone"):null;},
                             child: CircleAvatar(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: phoneShow?Colors.blue:Colors.grey,
                               radius: 30,
                               child: Icon(
                                 Icons.call,
@@ -368,10 +416,11 @@ return mapString;
 //                              color: Colors.white,
 //                            ),
 //                          ),
+                          SizedBox(width: 20,),
                           GestureDetector(
-                            onTap: ()=>sendMail(widget.email),
+                            onTap: ()=>widget.email!=''?sendMail(widget.email):null,
                             child: CircleAvatar(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: widget.email!=''?Colors.blue:Colors.grey,
                               radius: 30,
                               child: Icon(
                                 Icons.mail,
@@ -443,30 +492,46 @@ return mapString;
                           color: Colors.black,
                           size: 24,
                         ),
-                        SizedBox(height: 8),
-                        Label(
-                          text: 'Business',
-                          color: Colors.grey,
-                          size: 20,
+                        Visibility(
+                            visible: phoneShow,
+                            child: SizedBox(height: 8)),
+                        Visibility(
+                          visible: phoneShow,
+                          child: Label(
+                            text: 'Business',
+                            color: Colors.grey,
+                            size: 20,
+                          ),
                         ),
-                        Label(
-                          text: _phone!=null?_phone:'N/A',
-                          color: Colors.grey,
-                          size: 17,
-                          bold: false,
+                        Visibility(
+                          visible: phoneShow,
+                          child: Label(
+                            text: _phone!=null?_phone:'N/A',
+                            color: Colors.grey,
+                            size: 17,
+                            bold: false,
+                          ),
                         ),
 
-                        SizedBox(height: 15),
-                        Label(
-                          text: 'Website',
-                          color: Colors.grey,
-                          size: 20,
+                        Visibility(
+                            visible: webShow,
+                            child: SizedBox(height: 15)),
+                        Visibility(
+                          visible: webShow,
+                          child: Label(
+                            text: 'Website',
+                            color: Colors.grey,
+                            size: 20,
+                          ),
                         ),
-                        Label(
-                          text: widget.website,
-                          color: Colors.grey,
-                          size: 17,
-                          bold: false,
+                        Visibility(
+                          visible: webShow,
+                          child: Label(
+                            text: widget.website,
+                            color: Colors.grey,
+                            size: 17,
+                            bold: false,
+                          ),
                         ),
 
                         SizedBox(height: 15),
@@ -484,7 +549,7 @@ return mapString;
                         Visibility(
                           maintainAnimation: true,
                           maintainState: true,
-                          visible: true,
+                          visible: visible,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
@@ -663,22 +728,27 @@ return mapString;
                           color: Colors.black,
                           size: 24,
                         ),
-                        SizedBox(height: 8),
-                       Row(
-                         children: <Widget>[
-                           Label(
-                             text: 'Type',
-                             color: Colors.grey,
-                             size: 19,
-                           ),
-                           SizedBox(width: 10),
-                           Label(
-                             text: widget.type,
-                             color: Colors.grey,
-                             size: 19,
-                             bold: false,
-                           ),
-                         ],
+                        Visibility(
+                            visible: typeShow,
+                            child: SizedBox(height: 8)),
+                       Visibility(
+                         visible: typeShow,
+                         child: Row(
+                           children: <Widget>[
+                             Label(
+                               text: 'Type',
+                               color: Colors.grey,
+                               size: 19,
+                             ),
+                             SizedBox(width: 10),
+                             Label(
+                               text: widget.type,
+                               color: Colors.grey,
+                               size: 19,
+                               bold: false,
+                             ),
+                           ],
+                         ),
                        ),
 
                         SizedBox(height: 8),
@@ -699,22 +769,27 @@ return mapString;
                           ],
                         ),
 
-                        SizedBox(height: 8),
-                        Row(
-                          children: <Widget>[
-                            Label(
-                              text: 'Industry',
-                              color: Colors.grey,
-                              size: 19,
-                            ),
-                            SizedBox(width: 10),
-                            Label(
-                              text: widget.industry,
-                              color: Colors.grey,
-                              size: 19,
-                              bold: false,
-                            ),
-                          ],
+                        Visibility(
+                            visible: industryShow,
+                            child: SizedBox(height: 8)),
+                        Visibility(
+                          visible: industryShow,
+                          child: Row(
+                            children: <Widget>[
+                              Label(
+                                text: 'Industry',
+                                color: Colors.grey,
+                                size: 19,
+                              ),
+                              SizedBox(width: 10),
+                              Label(
+                                text: widget.industry,
+                                color: Colors.grey,
+                                size: 19,
+                                bold: false,
+                              ),
+                            ],
+                          ),
                         ),
 
                         SizedBox(height: 8),
@@ -735,40 +810,50 @@ return mapString;
                           ],
                         ),
 
-                        SizedBox(height: 8),
-                        Row(
-                          children: <Widget>[
-                            Label(
-                              text: 'Prefferd Payment Type',
-                              color: Colors.grey,
-                              size: 19,
-                            ),
-                            SizedBox(width: 10),
-                            Label(
-                              text: widget.paymentType??'N/A',
-                              color: Colors.grey,
-                              size: 19,
-                              bold: false,
-                            ),
-                          ],
+                        Visibility(
+                            visible: paymentShow,
+                            child: SizedBox(height: 8)),
+                        Visibility(
+                          visible: paymentShow,
+                          child: Row(
+                            children: <Widget>[
+                              Label(
+                                text: 'Preferred Payment Type',
+                                color: Colors.grey,
+                                size: 19,
+                              ),
+                              SizedBox(width: 10),
+                              Label(
+                                text: widget.paymentType??'N/A',
+                                color: Colors.grey,
+                                size: 19,
+                                bold: false,
+                              ),
+                            ],
+                          ),
                         ),
 
-                        SizedBox(height: 8),
-                        Row(
-                          children: <Widget>[
-                            Label(
-                              text: 'Payment Terms',
-                              color: Colors.grey,
-                              size: 19,
-                            ),
-                            SizedBox(width: 10),
-                            Label(
-                              text: widget.paymentTerms,
-                              color: Colors.grey,
-                              size: 19,
-                              bold: false,
-                            ),
-                          ],
+                        Visibility(
+                            visible: paymentTermsshow,
+                            child: SizedBox(height: 8)),
+                        Visibility(
+                          visible: paymentTermsshow,
+                          child: Row(
+                            children: <Widget>[
+                              Label(
+                                text: 'Payment Terms',
+                                color: Colors.grey,
+                                size: 19,
+                              ),
+                              SizedBox(width: 10),
+                              Label(
+                                text: widget.paymentTerms,
+                                color: Colors.grey,
+                                size: 19,
+                                bold: false,
+                              ),
+                            ],
+                          ),
                         ),
 
                         SizedBox(height: 8),

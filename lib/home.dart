@@ -96,6 +96,7 @@ class Welcome extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 0, 15),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Container(
                       width: 35,
@@ -119,7 +120,7 @@ class Welcome extends StatelessWidget {
               //crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(35),
+                  padding: const EdgeInsets.fromLTRB(70,35,70,25),
                   child: Image.asset('images/logo.png'),
                 ),
                 Padding(
